@@ -21,8 +21,8 @@ jobs:
           blackduck_url: ${{ secrets.BLACKDUCK_URL }}
           blackduck_token: ${{ secrets.BLACKDUCK_TOKEN }}
           blackduck_scan_full: true
-  
-          ### Accepts Multiple Values
+          extraArgs: >
+            --detect.accuracy.required=NONE
           blackduck_scan_failure_severities: 'BLOCKER,CRITICAL'
  
           ### Uncomment below configuration to enable automatic fix pull request creation if vulnerabilities are reported
@@ -34,19 +34,19 @@ jobs:
   
           ### Uncomment below configuration if Synopsys Bridge diagnostic files needs to be uploaded
           # include_diagnostics: true
-      - name: Black Duck PR Scan
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: synopsys-sig/synopsys-action@v1.6.0
+      # - name: Black Duck PR Scan
+      #   if: ${{ github.event_name == 'pull_request' }}
+      #   uses: synopsys-sig/synopsys-action@v1.6.0
   
-         ### Use below configuration to set specific detect environment variables
-        env:
-         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
-        with:
-         blackduck_url: ${{ secrets.BLACKDUCK_URL }}
-         blackduck_token: ${{ secrets.BLACKDUCK_TOKEN }}
-         blackduck_scan_full: false
-         blackduck_prComment_enabled: true
-         github_token: ${{ secrets.GITHUB_TOKEN }}
+      #    ### Use below configuration to set specific detect environment variables
+      #   env:
+      #    DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+      #   with:
+      #    blackduck_url: ${{ secrets.BLACKDUCK_URL }}
+      #    blackduck_token: ${{ secrets.BLACKDUCK_TOKEN }}
+      #    blackduck_scan_full: false
+      #    blackduck_prComment_enabled: true
+      #    github_token: ${{ secrets.GITHUB_TOKEN }}
          
   
            ### Below configuration is used to enable automatic pull request comment based on Black Duck scan result
