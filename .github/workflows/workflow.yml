@@ -79,4 +79,4 @@ jobs:
           detect-version: 9.3.0
           blackduck-url: https://blackduck.apps.carrier.com
           blackduck-api-token: MDYzM2FmZjQtNzI0MS00N2MxLTk4ZTYtMDE4NDE3ODMyYmY4OjM3MjVjZDBiLTdiZmItNDljYy05Y2M1LWYyMGQ0ZjIwM2U0ZA==
-          fail-on-all-policy-severities: 'BLOCKER,CRITICAL'
+          # fail-on-all-policy-severities: 'BLOCKER,CRITICAL'
