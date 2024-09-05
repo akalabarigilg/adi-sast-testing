@@ -1,4 +1,5 @@
 # example workflow for Coverity on Polaris
+# sample
 name: coverity-on-polaris
 on:
   push:
