@@ -1,23 +1,29 @@
 # frozen_string_literal: true
 class Api::V1::MobileController < ApplicationController
-  skip_before_action :authenticated
+  before_action :authenticated
   before_action :mobile_request?
+  before_action :set_model, only: [:show, :index]
 
   respond_to :json
 
   def show
-    if params[:class]
-      model = params[:class].classify.constantize
-      respond_with model.find(params[:id]).to_json
+    if @model
+      record = @model.find_by(id: params[:id])
+      if record
+        respond_with record.to_json
+      else
+        render json: { error: 'Record not found' }, status: :not_found
+      end
+    else
+      render json: { error: 'Invalid class parameter' }, status: :bad_request
     end
   end
 
   def index
-    if params[:class]
-      model = params[:class].classify.constantize
-      respond_with model.all.to_json
+    if @model
+      respond_with @model.all.to_json
     else
-      respond_with nil.to_json
+      render json: { error: 'Invalid class parameter' }, status: :bad_request
     end
   end
 
@@ -28,6 +34,17 @@ class Api::V1::MobileController < ApplicationController
       session[:mobile_param] == "1"
     else
       request.user_agent =~ /ios|android/i
+    end
+  end
+
+  def set_model
+    if params[:class]
+      allowed_classes = %w[AllowedModel1 AllowedModel2]
+      if allowed_classes.include?(params[:class])
+        @model = params[:class].constantize
+      else
+        @model = nil
+      end
     end
   end
 end
