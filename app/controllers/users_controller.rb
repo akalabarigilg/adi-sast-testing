@@ -30,12 +30,21 @@ class UsersController < ApplicationController
 
     if user
       user.update(user_params_without_password)
-      if params[:user][:password].present? && (params[:user][:password] == params[:user][:password_confirmation])
-        user.password = params[:user][:password]
+      if params[:user][:password].present?
+        if params[:user][:password] == params[:user][:password_confirmation]
+          user.password = params[:user][:password]
+        else
+          flash[:error] = "Password confirmation does not match"
+          return redirect_to user_account_settings_path(user_id: current_user.id)
+        end
       end
 
       begin
-        message = true if user.save
+        if user.save
+          message = true
+        else
+          flash[:error] = user.errors.full_messages.to_sentence
+        end
       rescue ActiveRecord::RecordInvalid => e
         flash[:error] = "Could not update user: #{e.message}"
       end
