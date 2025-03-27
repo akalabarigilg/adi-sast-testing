@@ -26,17 +26,23 @@ class UsersController < ApplicationController
   def update
     message = false
 
-    user = User.where("id = '#{params[:user][:id]}'")[0]
+    user = User.find_by(id: params[:user][:id])
 
     if user
       user.update(user_params_without_password)
       if params[:user][:password].present? && (params[:user][:password] == params[:user][:password_confirmation])
         user.password = params[:user][:password]
       end
-      message = true if user.save!
+
+      begin
+        message = true if user.save
+      rescue ActiveRecord::RecordInvalid => e
+        flash[:error] = "Could not update user: #{e.message}"
+      end
+
       respond_to do |format|
         format.html { redirect_to user_account_settings_path(user_id: current_user.id) }
-        format.json { render json: {msg: message ? "success" : "false "} }
+        format.json { render json: { msg: message ? "success" : "false" } }
       end
     else
       flash[:error] = "Could not update user!"
@@ -47,7 +53,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit!
+    params.require(:user).permit(:email, :admin, :first_name, :last_name, :password, :password_confirmation)
   end
 
   # unpermitted attributes are ignored in production
