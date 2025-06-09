@@ -1,42 +1,24 @@
-name: trivy scan
-
+name: build
 on:
   push:
-    branches: ["master"]
+    branches:
+      - main
   pull_request:
-    branches: ["master"]
-
-permissions:
-  contents: read
-
 jobs:
-  trivy-scan:
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
+  build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v3
       - name: Build an image from Dockerfile
-        run: |
-          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
-
-      - name: Run Trivy vulnerability scanner (HTML)
-        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'mongo:4.4'
-          format: 'template'
-          template: '@/contrib/html.tpl'
-          output: 'trivy-results.html'
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-      - name: Check if HTML report exists
-        run: ls -l trivy-results.html
-      - name: Upload Trivy HTML Report as an artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-html-report
-          path: trivy-results.html
