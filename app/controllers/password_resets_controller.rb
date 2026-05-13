@@ -3,7 +3,10 @@ class PasswordResetsController < ApplicationController
   skip_before_action :authenticated
 
   def reset_password
-    user = Marshal.load(Base64.decode64(params[:user])) unless params[:user].nil?
+    user = nil
+    if !params[:token].nil? && is_valid?(params[:token])
+      user = @user  # @user is set by is_valid? method
+    end
 
     if user && params[:password] && params[:confirm_password] && params[:password] == params[:confirm_password]
       user.password = params[:password]
@@ -18,6 +21,7 @@ class PasswordResetsController < ApplicationController
 
   def confirm_token
     if !params[:token].nil? && is_valid?(params[:token])
+      @token = params[:token]  # Make token available to the view
       flash[:success] = "Password reset token confirmed! Please create a new password."
       render "password_resets/reset_password"
     else
