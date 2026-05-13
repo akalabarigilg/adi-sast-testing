@@ -81,6 +81,9 @@ $('#delete_button').click(function() {
 
   $.ajax({
       url: "/admin/" +  <%= params[:admin_id] %> + "/delete_user.json",
+    data: {
+      authenticity_token: $('meta[name="csrf-token"]').attr('content')
+    },
     type: "POST",
     success: function(response) {
       $('#success').show(500).delay(1500).fadeOut();
