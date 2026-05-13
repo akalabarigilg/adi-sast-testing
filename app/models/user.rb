@@ -2,11 +2,12 @@
 require "encryption"
 
 class User < ApplicationRecord
+  has_secure_password
+
   validates :password, presence: true,
                        confirmation: true,
                        length: {within: 6..40},
-                       on: :create,
-                       if: :password
+                       on: :create
 
   validates_presence_of :email
   validates_uniqueness_of :email
@@ -19,7 +20,6 @@ class User < ApplicationRecord
   has_many :pay, dependent: :destroy
   has_many :messages, foreign_key: :receiver_id, dependent: :destroy
 
-  before_save :hash_password
   after_create { generate_token(:auth_token) }
   before_create :build_benefits_data
 
@@ -39,20 +39,12 @@ class User < ApplicationRecord
   private
 
   def self.authenticate(email, password)
-    auth = nil
     user = find_by_email(email)
     raise "#{email} doesn't exist!" if !(user)
-    if user.password == Digest::MD5.hexdigest(password)
-      auth = user
+    if user.authenticate(password)
+      return user
     else
       raise "Incorrect Password!"
-    end
-    return auth
-  end
-
-  def hash_password
-    if will_save_change_to_password?
-      self.password = Digest::MD5.hexdigest(self.password)
     end
   end
 
