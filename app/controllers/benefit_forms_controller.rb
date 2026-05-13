@@ -18,10 +18,14 @@ class BenefitFormsController < ApplicationController
   def upload
     file = params[:benefits][:upload]
     if file
-      flash[:success] = "File Successfully Uploaded!"
-      Benefits.save(file, params[:benefits][:backup])
+      begin
+        Benefits.save(file, params[:benefits][:backup])
+        flash[:success] = "File Successfully Uploaded!"
+      rescue => e
+        flash[:error] = "Upload failed: #{e.message}"
+      end
     else
-      flash[:error] = "Something went wrong"
+      flash[:error] = "No file selected"
     end
     redirect_to user_benefit_forms_path(user_id: current_user.id)
   end
