@@ -59,11 +59,12 @@
 
 $('#submit_button').click(function() {
   var valuesToSubmit = $("#account_edit").serialize();
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
   $("#editAcct").modal('hide');
 
   $.ajax({
       url: "/admin/" +  <%= @user.id %> + "/update_user.json",
-    data: valuesToSubmit,
+    data: valuesToSubmit + "&authenticity_token=" + encodeURIComponent(csrfToken),
     type: "POST",
     success: function(response) {
       $('#success').show(500).delay(1500).fadeOut();
@@ -77,10 +78,12 @@ $('#submit_button').click(function() {
 });
 
 $('#delete_button').click(function() {
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
   $("#editAcct").modal('hide');
 
   $.ajax({
       url: "/admin/" +  <%= params[:admin_id] %> + "/delete_user.json",
+    data: "authenticity_token=" + encodeURIComponent(csrfToken),
     type: "POST",
     success: function(response) {
       $('#success').show(500).delay(1500).fadeOut();

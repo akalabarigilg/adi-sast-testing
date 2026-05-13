@@ -235,10 +235,11 @@ function decryptShow(response){
 */
 $("#decrypt_btn").click(function(event){
   var valuesToSubmit = $("#decrypt_form").serialize();
+  var csrfToken = $('meta[name="csrf-token"]').attr('content');
   event.preventDefault();
   $.ajax({
       url: <%= sanitize(decrypted_bank_acct_num_user_pay_index_path(:format => "json", user_id: current_user.id).inspect) %>,
-    data: valuesToSubmit,
+    data: valuesToSubmit + "&authenticity_token=" + encodeURIComponent(csrfToken),
     type: "POST",
     success: function(response) {
     $('#success').show(500).delay(1500).fadeOut();
@@ -257,10 +258,11 @@ $("#decrypt_btn").click(function(event){
 */
 $("#dd_form_btn").click(function(event) {
      var valuesToSubmit = $("#bank_info_form").serialize();
+     var csrfToken = $('meta[name="csrf-token"]').attr('content');
      event.preventDefault();
      $.ajax({
       url: <%= sanitize(update_dd_info_user_pay_index_path(:format => "json").inspect) %>,
-    data: valuesToSubmit,
+    data: valuesToSubmit + "&authenticity_token=" + encodeURIComponent(csrfToken),
     type: "POST",
     success: function(response) {
     $('#success').show(500).delay(1500).fadeOut();
