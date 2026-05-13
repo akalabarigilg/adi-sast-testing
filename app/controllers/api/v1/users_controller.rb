@@ -29,16 +29,27 @@ class Api::V1::UsersController < ApplicationController
     # We've had issues with URL encoding, etc. causing issues so just to be safe
     # we will go ahead and unescape the user's token
     unescape_token(token)
-    @clean_token =~ /(.*?)-(.*)/
+    
+    # Validate token format and extract components
+    return false unless @clean_token =~ /\A(\d+)-([\da-f]+)\z/i
     id = $1
     hash = $2
+    
+    # Validate that id and hash are present
+    return false if id.blank? || hash.blank?
 
     check_hash(id, hash)
   end
 
   def check_hash(id, hash)
-    digest = OpenSSL::Digest::SHA1.hexdigest("#{ACCESS_TOKEN_SALT}:#{id}")
-    hash == digest
+    # Use HMAC with SHA256 for secure token verification
+    expected_digest = OpenSSL::HMAC.hexdigest('SHA256', ACCESS_TOKEN_SECRET, id.to_s)
+    # Use constant-time comparison to prevent timing attacks
+    ActiveSupport::SecurityUtils.secure_compare(hash.downcase, expected_digest.downcase)
+  rescue => e
+    # Log the error and return false for any exceptions during verification
+    Rails.logger.error "Token verification error: #{e.message}"
+    false
   end
 
   # We had some issues with the token and url encoding...
