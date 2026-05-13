@@ -3,7 +3,7 @@ class PasswordResetsController < ApplicationController
   skip_before_action :authenticated
 
   def reset_password
-    user = Marshal.load(Base64.decode64(params[:user])) unless params[:user].nil?
+    user = User.find_by(id: session[:password_reset_user_id]) if session[:password_reset_user_id]
 
     if user && params[:password] && params[:confirm_password] && params[:password] == params[:confirm_password]
       user.password = params[:password]
@@ -14,10 +14,13 @@ class PasswordResetsController < ApplicationController
       flash[:error] = "Error resetting your password. Please try again."
       redirect_to :login
     end
+    # Clear the session after password reset attempt
+    session.delete(:password_reset_user_id)
   end
 
   def confirm_token
     if !params[:token].nil? && is_valid?(params[:token])
+      session[:password_reset_user_id] = @user.id
       flash[:success] = "Password reset token confirmed! Please create a new password."
       render "password_resets/reset_password"
     else
