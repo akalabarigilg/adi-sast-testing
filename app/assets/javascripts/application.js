@@ -27,7 +27,7 @@
 //= require jquery.easy-pie-chart.js
 //= require jquery-fileupload/basic
 //= require jquery-fileupload/vendor/tmpl
-//= require jsapi
+// jsapi removed - replaced with modern Google Charts loader
 //= html5.js
 
 function rubyCodeFormat() {

@@ -51,9 +51,21 @@
 
 <script type="text/javascript">
 
- google.load("visualization", "1", {
-  packages: ["corechart"]
-});
+ // Load Google Charts library
+ if (typeof google === 'undefined' || typeof google.charts === 'undefined') {
+   var script = document.createElement('script');
+   script.src = 'https://www.gstatic.com/charts/loader.js';
+   script.integrity = 'sha384-fnqn3vcZ1nw0qVb1CB2YEZOFrHoN8sca0LOh7ywqPsIhfaAOtEfIGqRjzcd8ceEq';
+   script.crossOrigin = 'anonymous';
+   script.onload = function() {
+     google.charts.load('current', {'packages':['corechart']});
+     google.charts.setOnLoadCallback(drawChart2);
+   };
+   document.head.appendChild(script);
+ } else {
+   google.charts.load('current', {'packages':['corechart']});
+   google.charts.setOnLoadCallback(drawChart2);
+ }
 
 function drawChart2() {
   var data = google.visualization.arrayToDataTable([
