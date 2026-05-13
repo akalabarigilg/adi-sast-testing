@@ -229,10 +229,11 @@ function resizeTopWidgets(){
 
 $("#cal_update_submit").click(function(event) {
     var valuesToSubmit = $("#cal_update").serialize();
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
     event.preventDefault();
     $.ajax({
       url: "/schedule.json",
-    data: valuesToSubmit,
+    data: valuesToSubmit + "&authenticity_token=" + encodeURIComponent(csrfToken),
     type: "POST",
     success: function(response) {
     if (response.msg == "failure") {

@@ -109,10 +109,11 @@
 
 $("#submit_button").click(function(event) {
     var valuesToSubmit = $("#send_message").serialize();
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
     event.preventDefault();
     $.ajax({
       url: <%= "/users/#{current_user.id}/messages.json".inspect.html_safe %>,
-    data: valuesToSubmit,
+    data: valuesToSubmit + "&authenticity_token=" + encodeURIComponent(csrfToken),
     type: "POST",
     success: function(response) {
     if (response.msg == "failure") {
