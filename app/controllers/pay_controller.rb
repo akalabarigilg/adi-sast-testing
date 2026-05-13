@@ -27,7 +27,22 @@ class PayController < ApplicationController
 
   def destroy
     pay = Pay.find_by_id(params[:id])
-    if pay.present? and pay.destroy
+    
+    # Check if pay record exists
+    unless pay.present?
+      flash[:error] = "Pay record not found"
+      redirect_to user_pay_index_path
+      return
+    end
+    
+    # Check authorization: user must own the record or be an admin
+    unless pay.user_id == current_user.id || is_admin?
+      flash[:error] = "You are not authorized to delete this record"
+      redirect_to user_pay_index_path
+      return
+    end
+    
+    if pay.destroy
       flash[:success] = "Successfully Deleted Entry"
     else
       flash[:error] = "Unable to process that request at this time"
