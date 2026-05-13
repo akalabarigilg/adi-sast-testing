@@ -1,9 +1,10 @@
  <div id="column_chart"></div>
  <!-- Google Visualization JS -->
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js" integrity="sha384-fnqn3vcZ1nw0qVb1CB2YEZOFrHoN8sca0LOh7ywqPsIhfaAOtEfIGqRjzcd8ceEq" crossorigin="anonymous"></script>
 
 <script type="text/javascript">
-   // google.load("visualization", "1", {packages:["corechart"]});
+   google.charts.load('current', {'packages':['corechart']});
+   google.charts.setOnLoadCallback(drawChart3);
   
  
 
