@@ -36,4 +36,9 @@ RUN bundle install --jobs 4 --retry 3 --verbose
 # Now copy rest of the app
 COPY . /myapp
 
+# Create non-root user and switch to it for security
+RUN useradd -m -u 10001 appuser
+RUN chown -R appuser:appuser /myapp
+USER appuser
+
 
