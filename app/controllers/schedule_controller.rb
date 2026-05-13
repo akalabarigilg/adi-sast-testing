@@ -26,7 +26,7 @@ class ScheduleController < ApplicationController
        schedules.each do |s|
           hash = Hash.new
           hash[:id] = s[:id]
-          hash[:title] = s[:event_name]
+          hash[:title] = sanitize_user_input(s[:event_name])
           hash[:start] = s[:date_begin]
           hash[:end] = s[:date_end]
           jfs << hash
@@ -60,5 +60,19 @@ class ScheduleController < ApplicationController
 
   def schedule_params
     params.require(:schedule).permit(:date_begin, :date_end, :event_desc, :event_name, :event_type)
+  end
+
+  # Sanitize user input to prevent XSS attacks
+  def sanitize_user_input(input)
+    return "" if input.nil?
+    
+    # Strip HTML tags and limit length to prevent abuse
+    sanitized = ActionController::Base.helpers.strip_tags(input.to_s)
+    
+    # Limit length to 255 characters
+    sanitized = sanitized.truncate(255)
+    
+    # Additional HTML entity encoding for extra safety
+    ActionController::Base.helpers.html_escape(sanitized)
   end
 end
