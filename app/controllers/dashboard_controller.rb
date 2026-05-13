@@ -8,7 +8,9 @@ class DashboardController < ApplicationController
 
     # See if the user has a font preference
     if params[:font]
-      cookies[:font] = params[:font]
+      # Whitelist allowed font values to prevent XSS
+      allowed_fonts = ['8pt', '10pt', '12pt', '14pt', '16pt', '18pt', '20pt', '100%', '125%', '150%', '175%', '200%', '200%25']
+      cookies[:font] = allowed_fonts.include?(params[:font]) ? params[:font] : nil
     end
   end
 
