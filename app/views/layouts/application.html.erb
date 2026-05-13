@@ -8,8 +8,11 @@
   <!-- bootstrap css -->
 <%
 if cookies[:font]
+  # Validate font size against allowlist of safe values
+  allowed_font_sizes = ['10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px', '1em', '1.1em', '1.2em', '1.3em', '1.4em', '1.5em']
+  safe_font_size = allowed_font_sizes.include?(cookies[:font]) ? cookies[:font] : '16px'
 %>
-<style>body { font-size:<%= raw cookies[:font] %> !important;}</style>
+<style>body { font-size:<%= safe_font_size %> !important;}</style>
 <%
 end
 %>
