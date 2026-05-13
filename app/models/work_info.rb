@@ -2,7 +2,7 @@
 class WorkInfo < ApplicationRecord
   belongs_to :user
   has_one :key_management, foreign_key: :user_id, primary_key: :user_id, dependent: :destroy
-  #before_save :encrypt_ssn
+  before_save :encrypt_ssn
 
   # We should probably use this
   def last_four
@@ -10,6 +10,9 @@ class WorkInfo < ApplicationRecord
   end
 
   def encrypt_ssn
+    return unless self.SSN.present? && self.SSN_changed?
+    return if self.encrypted_ssn.present?
+    
     aes = OpenSSL::Cipher.new(cipher_type)
     aes.encrypt
     aes.key = key[0..31]
